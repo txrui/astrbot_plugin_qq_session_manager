@@ -1,0 +1,22 @@
+-- 002_group_name —— 会话路由新增群名列
+--
+-- 语义：为 sessions 表增加 group_name 列，存放反查到的可读群名称。
+--
+-- 为什么需要：
+-- QQ 官方普通群消息负载只带 group_openid，不带群名；聊天记录页面若只显示
+-- openid（如 762146F1DBB849090BCC80B6A667253F）完全无法辨认是哪个群。
+-- 群名需要调用 QQ 开放平台 /v2/groups/{group_openid}/info 反查后回填。
+--
+-- 迁移方式：
+-- 新建库由 schema.sql 的 "CREATE TABLE IF NOT EXISTS sessions(...)" 直接
+-- 带上 group_name 列。
+-- 旧库由 Repository._migrate_add_group_name() 执行
+-- "ALTER TABLE sessions ADD COLUMN group_name TEXT"；
+-- 该语句在 SQLite 中不是幂等的，因此迁移前先用 PRAGMA table_info(sessions)
+-- 确认列不存在才执行。
+--
+-- 回填策略：历史会话的 group_name 初始为 NULL，在下一次入站消息采集时
+-- 由新查到的群名补齐；也可在插件视图点击「回填群名称」按钮批量反查
+-- （反查结果带缓存，不会为每条消息重复请求）。
+
+ALTER TABLE sessions ADD COLUMN group_name TEXT;

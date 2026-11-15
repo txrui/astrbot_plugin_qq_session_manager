@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QQ 会话管理器</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="hero">
+        <div>
+          <h1>QQ 会话管理器</h1>
+          <p class="subtitle">查看会话路由、浏览聊天记录，并在 AstrBot 中直接管理路由状态。</p>
+        </div>
+        <button id="refresh-btn" class="button button-secondary">刷新数据</button>
+      </header>
+
+      <section id="stats" class="stats-grid" aria-label="运行概览">
+        <article class="stat-card"><span>会话路由</span><strong id="stat-sessions">--</strong></article>
+        <article class="stat-card"><span>聊天消息</span><strong id="stat-messages">--</strong></article>
+        <article class="stat-card"><span>数据库状态</span><strong id="stat-health">--</strong></article>
+        <article class="stat-card"><span>路由恢复</span><strong id="stat-recovery">--</strong></article>
+      </section>
+
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="sessions" role="tab">会话路由</button>
+        <button class="tab" data-tab="messages" role="tab">聊天记录</button>
+      </nav>
+
+      <section id="tab-sessions" class="tab-panel active">
+        <div class="toolbar">
+          <input id="session-keyword" class="input" type="search" placeholder="搜索会话、目标或平台 ID" />
+          <select id="session-scene" class="input select">
+            <option value="">全部场景</option>
+            <option value="friend">私聊</option>
+            <option value="group">群聊</option>
+            <option value="channel">频道</option>
+          </select>
+          <select id="session-status" class="input select">
+            <option value="">全部状态</option>
+            <option value="enabled">正常</option>
+            <option value="disabled">已禁用</option>
+            <option value="expired">已过期</option>
+          </select>
+          <button id="session-search" class="button button-primary">查询</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>场景</th><th>会话 / 目标</th><th>平台实例</th><th>最近消息</th><th>状态</th><th>操作</th></tr>
+            </thead>
+            <tbody id="session-rows"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span id="session-summary" class="pagination-summary">共 0 条会话</span>
+          <div class="pagination-actions">
+            <button id="session-prev" class="button button-small" type="button">上一页</button>
+            <button id="session-next" class="button button-small" type="button">下一页</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-messages" class="tab-panel">
+        <div class="qq-chat-shell">
+          <aside class="qq-conversation-panel">
+            <div class="qq-panel-header">
+              <div>
+                <h2>消息</h2>
+                <span id="conversation-count">0 个会话</span>
+              </div>
+              <div class="qq-panel-actions">
+                <button id="group-name-backfill" class="button button-small" type="button">回填名称</button>
+                <button id="conversation-refresh" class="button button-small" type="button">刷新会话</button>
+              </div>
+            </div>
+            <div class="qq-conversation-search">
+              <input id="conversation-keyword" class="input" type="search" placeholder="搜索群聊或私聊" />
+              <button id="conversation-search" class="button button-small" type="button">搜索</button>
+            </div>
+            <div class="qq-scene-tabs" role="tablist" aria-label="会话类型">
+              <button class="qq-scene-tab active" data-scene="" role="tab">全部</button>
+              <button class="qq-scene-tab" data-scene="group" role="tab">群聊</button>
+              <button class="qq-scene-tab" data-scene="friend" role="tab">私聊</button>
+            </div>
+            <div id="conversation-list" class="qq-conversation-list" role="listbox" aria-label="会话列表"></div>
+          </aside>
+
+          <section class="qq-chat-panel">
+            <header class="qq-chat-header">
+              <div class="qq-chat-identity">
+                <span id="chat-avatar" class="qq-chat-avatar">群</span>
+                <div>
+                  <h2 id="chat-title">请选择会话</h2>
+                  <p id="chat-subtitle">从左侧选择群聊或私聊查看聊天记录</p>
+                </div>
+              </div>
+              <div id="chat-status-slot"></div>
+            </header>
+
+            <div id="chat-toolbar" class="qq-chat-toolbar is-hidden">
+              <input id="message-keyword" class="input" type="search" placeholder="在当前会话中搜索消息" />
+              <button id="message-search" class="button button-primary button-small">搜索</button>
+            </div>
+
+            <div id="message-list" class="qq-message-list" aria-live="polite">
+              <div class="qq-chat-placeholder">
+                <div class="qq-placeholder-icon">☏</div>
+                <strong>选择一个会话</strong>
+                <span>聊天记录将在这里显示</span>
+              </div>
+            </div>
+
+            <footer class="qq-chat-footer">
+              <span id="message-summary">尚未选择会话</span>
+              <button id="message-more" class="button button-small is-hidden" type="button">加载更多</button>
+            </footer>
+          </section>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="footer-hint">会话记录保存在插件数据目录的 SQLite 数据库中。</span>
+        <button id="cleanup-btn" class="button button-danger-ghost">清理过期数据</button>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status"></div>
+
+    <div id="confirm-dialog" class="confirm-overlay hidden" role="presentation">
+      <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+        <h2 id="confirm-title">确认操作</h2>
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="button" type="button">取消</button>
+          <button id="confirm-submit" class="button button-danger-ghost" type="button">确认</button>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+-- 001_initial —— 初始 schema
+--
+-- 初始表结构由 database/schema.sql 定义，Repository.initialize() 以
+-- "CREATE TABLE IF NOT EXISTS" 的幂等方式应用，因此本迁移文件不再重复 DDL，
+-- 只记录该版本的迁移语义，避免两份 DDL 产生漂移。
+--
+-- 版本号 1 的内容：
+--   - schema_migrations      迁移版本记录
+--   - platform_instances     平台实例（多 Bot 隔离）
+--   - sessions               会话路由（含 normalized_session_id / id_normalization_rule）
+--   - session_messages       聊天记录（含方向、导入标记、原始 JSON）
+--   - message_attachments    附件索引
+--   - diagnostic_events      运行诊断
+--
+-- 完整 DDL 见 database/schema.sql。

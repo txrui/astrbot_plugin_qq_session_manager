@@ -1,0 +1,284 @@
+:root,
+[data-theme="light"] {
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --panel-soft: #f8f9fc;
+  --text: #20242c;
+  --muted: #707887;
+  --border: #e5e8ef;
+  --primary: #4668f2;
+  --primary-soft: #edf1ff;
+  --success: #1f9d55;
+  --success-soft: #e9f8ef;
+  --warning: #b56b08;
+  --warning-soft: #fff4df;
+  --danger: #d93b4c;
+  --danger-soft: #ffedf0;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.07);
+  --qq-blue: #12b7f5;
+  --qq-avatar-group: #68a6ff;
+  --qq-avatar-friend: #7ed3a7;
+  --qq-avatar-channel: #b28cff;
+}
+
+[data-theme="dark"] {
+  --bg: #15171c;
+  --panel: #202329;
+  --panel-soft: #272b33;
+  --text: #eef0f4;
+  --muted: #969daa;
+  --border: #343945;
+  --primary: #7891ff;
+  --primary-soft: #283254;
+  --success: #61d28d;
+  --success-soft: #1f3a2a;
+  --warning: #ffbd5d;
+  --warning-soft: #44341d;
+  --danger: #ff7584;
+  --danger-soft: #45272c;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  --qq-blue: #28c2ff;
+  --qq-avatar-group: #518fe8;
+  --qq-avatar-friend: #4eae7d;
+  --qq-avatar-channel: #8965db;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+#app { max-width: 1280px; margin: 0 auto; }
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.eyebrow { margin: 0 0 4px; color: var(--primary); font-size: 12px; font-weight: 700; letter-spacing: .12em; }
+h1 { margin: 0; font-size: 28px; line-height: 1.25; }
+.subtitle { margin: 8px 0 0; color: var(--muted); }
+.button {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 14px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .18s ease;
+}
+.button:hover { transform: translateY(-1px); border-color: var(--primary); }
+.button-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.button-secondary { background: var(--panel); }
+.button-danger-ghost { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
+.button-small { padding: 5px 10px; border-radius: 7px; font-size: 12px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.stat-card { display: flex; flex-direction: column; gap: 4px; padding: 15px 17px; background: var(--panel); border: 1px solid var(--border); border-radius: 13px; box-shadow: var(--shadow); }
+.stat-card span { color: var(--muted); font-size: 12px; }
+.stat-card strong { font-size: 22px; }
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.tab { padding: 9px 16px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font: inherit; font-weight: 600; cursor: pointer; }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 12px; }
+.input { min-width: 150px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); color: var(--text); font: inherit; outline: none; }
+.input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.select { min-width: 120px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 13px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { background: var(--panel-soft); color: var(--muted); font-size: 12px; font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+.mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; word-break: break-all; }
+.cell-sub { margin-top: 3px; color: var(--muted); font-size: 12px; }
+.badge { display: inline-flex; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge-enabled { background: var(--success-soft); color: var(--success); }
+.badge-disabled { background: var(--warning-soft); color: var(--warning); }
+.badge-expired { background: var(--danger-soft); color: var(--danger); }
+.badge-scene { background: var(--primary-soft); color: var(--primary); }
+.actions { display: flex; gap: 6px; white-space: nowrap; }
+.footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+.pagination { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+.pagination-actions { display: flex; gap: 8px; }
+.toast { position: fixed; right: 24px; bottom: 24px; max-width: 380px; padding: 11px 15px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); color: var(--text); box-shadow: var(--shadow); z-index: 20; }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 20, 30, 0.48);
+}
+.confirm-dialog {
+  width: min(420px, 100%);
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(15, 20, 30, 0.28);
+}
+.confirm-dialog h2 { margin: 0 0 10px; font-size: 18px; }
+.confirm-dialog p { margin: 0; color: var(--muted); white-space: pre-line; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; }
+.confirm-actions .button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.hidden { display: none !important; }
+.is-hidden { display: none !important; }
+
+/* QQ PC 风格聊天记录 */
+.qq-chat-shell {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  height: 650px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.qq-conversation-panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--panel-soft);
+}
+.qq-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 18px 12px;
+}
+.qq-panel-header h2,
+.qq-chat-header h2 { margin: 0; font-size: 17px; }
+.qq-panel-header span { color: var(--muted); font-size: 12px; }
+.qq-panel-actions { display: flex; align-items: center; gap: 6px; }
+.qq-conversation-search { display: flex; gap: 8px; padding: 0 14px 12px; }
+.qq-conversation-search .input { width: 100%; min-width: 0; border-radius: 10px; background: var(--panel); }
+.qq-conversation-search .button { flex: none; }
+.qq-scene-tabs { display: flex; gap: 5px; padding: 0 14px 12px; }
+.qq-scene-tab {
+  flex: 1;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.qq-scene-tab:hover { color: var(--primary); }
+.qq-scene-tab.active { background: var(--primary-soft); color: var(--primary); }
+.qq-conversation-list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 7px 10px; }
+.qq-conversation-item {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  padding: 10px 9px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.qq-conversation-item:hover { background: var(--panel); }
+.qq-conversation-item.active { background: var(--primary-soft); }
+.qq-conversation-avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--qq-avatar-group);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+.qq-conversation-avatar.friend { background: var(--qq-avatar-friend); }
+.qq-conversation-avatar.channel { background: var(--qq-avatar-channel); }
+.qq-conversation-main { min-width: 0; }
+.qq-conversation-title-row { display: flex; align-items: center; gap: 6px; }
+.qq-conversation-name { overflow: hidden; flex: 1; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.qq-conversation-time { color: var(--muted); font-size: 11px; }
+.qq-conversation-preview {
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qq-conversation-empty { padding: 30px 12px; color: var(--muted); text-align: center; }
+.qq-chat-panel { display: flex; min-width: 0; flex-direction: column; background: var(--panel); }
+.qq-chat-header {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 19px;
+  border-bottom: 1px solid var(--border);
+}
+.qq-chat-identity { display: flex; min-width: 0; align-items: center; gap: 11px; }
+.qq-chat-avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--qq-avatar-group);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+.qq-chat-avatar.friend { background: var(--qq-avatar-friend); }
+.qq-chat-avatar.channel { background: var(--qq-avatar-channel); }
+.qq-chat-header h2 { overflow: hidden; max-width: 480px; text-overflow: ellipsis; white-space: nowrap; }
+.qq-chat-header p { overflow: hidden; max-width: 520px; margin: 2px 0 0; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.qq-chat-toolbar { display: flex; gap: 8px; padding: 10px 18px; border-bottom: 1px solid var(--border); background: var(--panel-soft); }
+.qq-chat-toolbar .input { min-width: 0; flex: 1; }
+.qq-message-list { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px; background: linear-gradient(180deg, var(--panel-soft), var(--panel)); }
+.qq-chat-placeholder { display: flex; height: 100%; align-items: center; justify-content: center; flex-direction: column; color: var(--muted); }
+.qq-placeholder-icon { display: grid; width: 72px; height: 72px; margin-bottom: 12px; place-items: center; border-radius: 24px; background: var(--primary-soft); color: var(--primary); font-size: 34px; }
+.qq-chat-placeholder strong { color: var(--text); font-size: 16px; }
+.qq-chat-placeholder span { margin-top: 3px; font-size: 12px; }
+.qq-message-row { display: flex; margin-bottom: 16px; align-items: flex-start; gap: 10px; }
+.qq-message-row.outbound { flex-direction: row-reverse; }
+.qq-message-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border-radius: 9px; background: var(--qq-avatar-friend); color: #fff; font-size: 12px; font-weight: 700; }
+.qq-message-row.outbound .qq-message-avatar { background: var(--qq-blue); }
+.qq-message-body { display: flex; max-width: min(74%, 680px); flex-direction: column; }
+.qq-message-row.outbound .qq-message-body { align-items: flex-end; }
+.qq-message-sender { margin: 0 4px 4px; color: var(--muted); font-size: 11px; }
+.qq-message-bubble { padding: 9px 13px; border: 1px solid var(--border); border-radius: 5px 14px 14px 14px; background: var(--panel); box-shadow: 0 2px 8px rgba(31, 41, 55, 0.05); white-space: pre-wrap; word-break: break-word; }
+.qq-message-row.outbound .qq-message-bubble { border-color: var(--qq-blue); border-radius: 14px 5px 14px 14px; background: var(--qq-blue); color: #fff; }
+.qq-message-time { margin: 4px 4px 0; color: var(--muted); font-size: 10px; }
+.qq-chat-footer { display: flex; min-height: 46px; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 18px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+.qq-message-empty { margin: auto; color: var(--muted); text-align: center; }
+
+@media (max-width: 760px) {
+  body { padding: 15px; }
+  .hero { flex-direction: column; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer { align-items: flex-start; flex-direction: column; }
+  .qq-chat-shell { grid-template-columns: 1fr; height: auto; }
+  .qq-conversation-panel { max-height: 340px; border-right: 0; border-bottom: 1px solid var(--border); }
+  .qq-chat-panel { min-height: 520px; }
+  .qq-chat-header { align-items: flex-start; flex-direction: column; }
+  .qq-message-body { max-width: 86%; }
+}
