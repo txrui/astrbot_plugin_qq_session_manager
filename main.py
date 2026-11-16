@@ -11,6 +11,7 @@ try:
     from .adapters.platform_discovery import (
         describe_instances,
         find_qq_official_instances,
+        find_txrui_instances,
     )
     from .core.collector import EventCollector
     from .core.group_name import GroupNameResolver
@@ -20,7 +21,7 @@ try:
     from .core.web_view import ManagementService, WebViewAPI
 except ImportError:  # 顶层模块方式加载时的回退
     from adapters.compatibility import CompatibilityManager
-    from adapters.platform_discovery import describe_instances, find_qq_official_instances
+    from adapters.platform_discovery import describe_instances, find_qq_official_instances, find_txrui_instances
     from core.collector import EventCollector
     from core.group_name import GroupNameResolver
     from core.repository import Repository
@@ -96,7 +97,7 @@ class QQSessionManagerPlugin(star.Star):
         """兜底：AstrBot 全部就绪后再确认一次兼容层状态。"""
         if not self.config.get("enable_route_recovery", True):
             return
-        if self.compatibility.status != "installed":
+        if self.compatibility.status not in {"installed", "native"}:
             logger.info(
                 "[QQ会话管理器] AstrBot 就绪时兼容层仍未安装（状态=%s），再次尝试",
                 self.compatibility.status,
@@ -107,6 +108,12 @@ class QQSessionManagerPlugin(star.Star):
         """发现 QQ 官方适配器实例并安装兼容层。"""
         instances = find_qq_official_instances(self.context)
         if not instances:
+            txrui_instances = find_txrui_instances(self.context)
+            if txrui_instances:
+                self.compatibility.status = "native"
+                self.compatibility.reason = "txrui 原生支持按会话发送，无需 QQ 缓存恢复补丁"
+                logger.info("[QQ会话管理器] txrui 会话采集已就绪: %s", describe_instances(txrui_instances))
+                return
             if self.compatibility.status != "degraded":
                 self.compatibility.status = "degraded"
                 self.compatibility.reason = "未找到 QQ 官方适配器实例"
@@ -145,16 +152,16 @@ class QQSessionManagerPlugin(star.Star):
     # ------------------------------------------------------------- 事件监听
 
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE, priority=999)
-    @filter.platform_adapter_type(filter.PlatformAdapterType.QQOFFICIAL)
     async def on_private_message(self, event: AstrMessageEvent):
         await self._collect(event)
 
     @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE, priority=999)
-    @filter.platform_adapter_type(filter.PlatformAdapterType.QQOFFICIAL)
     async def on_group_message(self, event: AstrMessageEvent):
         await self._collect(event)
 
     async def _collect(self, event: AstrMessageEvent) -> None:
+        if event.get_platform_name() not in {"qq_official", "txrui"}:
+            return
         try:
             message = await self.collector.handle(event)
         except Exception as exc:

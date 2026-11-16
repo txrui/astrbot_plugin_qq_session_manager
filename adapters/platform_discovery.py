@@ -60,6 +60,14 @@ def find_qq_official_instances(context: Any) -> list[Any]:
     return [inst for inst in _iter_platform_instances(manager) if is_qq_official_instance(inst)]
 
 
+def find_txrui_instances(context: Any) -> list[Any]:
+    """txrui 原生支持按会话发送，仅发现实例，不安装 QQ 专用补丁。"""
+    manager = getattr(context, "platform_manager", None)
+    return [inst for inst in _iter_platform_instances(manager)
+            if _platform_type(inst) == "txrui"
+            and callable(getattr(inst, "send_by_session", None))]
+
+
 def platform_id_of(inst: Any) -> str:
     """返回平台实例 ID（配置中的 id），用于多 Bot 隔离。"""
     return _platform_id(inst)

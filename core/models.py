@@ -41,6 +41,7 @@ class NormalizedMessage:
     timestamp: int
     imported: int = 0
     id_normalization_rule: str | None = None
+    platform: str = "qq_official"
 
 @dataclass(frozen=True)
 class AdapterResult:

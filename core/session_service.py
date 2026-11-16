@@ -30,7 +30,10 @@ class SessionService:
         if not self.config.get(f"support_{message.scene}", True):
             return None
 
-        _, rule = normalize_session_id(message.session_id, message.scene)
+        _, rule = (
+            normalize_session_id(message.session_id, message.scene)
+            if message.platform == "qq_official" else (message.session_id, "identity")
+        )
         message = NormalizedMessage(
             **{**message.__dict__, "id_normalization_rule": rule}
         )

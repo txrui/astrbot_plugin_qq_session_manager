@@ -198,10 +198,52 @@ def _timestamp(event: Any) -> int:
     return int(time.time())
 
 
-def normalize_event(event: Any, *, store_raw: bool = True) -> NormalizedMessage | None:
-    """把 AstrBot 事件规范化为内部消息模型；非 QQ 官方平台返回 None。"""
-    if _platform_type(event) != "qq_official":
+def _normalize_txrui(event: Any, *, store_raw: bool) -> NormalizedMessage | None:
+    raw = _raw(event)
+    session_id = _text(_call(event, "get_session_id") or getattr(event, "session_id", None))
+    platform_id = _platform_instance_id(event)
+    if not session_id or not platform_id:
         return None
+    event_type = str(_call(event, "get_message_type", "") or "").upper()
+    if "GROUP" in event_type:
+        scene = "group"
+    elif "FRIEND" in event_type or "PRIVATE" in event_type:
+        scene = "friend"
+    else:
+        extra = _field(raw, "extra")
+        chat_type = str(_field(raw, "chat_type") or _field(extra, "chat_type") or "").lower()
+        scene = {"private": "friend", "group": "group"}.get(chat_type)
+        if scene is None:
+            return None
+    sender = _field(raw, "sender")
+    member = getattr(getattr(event, "message_obj", None), "sender", None)
+    return NormalizedMessage(
+        platform_id=platform_id,
+        platform="txrui",
+        bot_id=_text(_call(event, "get_self_id") or _field(raw, "account_id")),
+        session_id=session_id,
+        normalized_session_id=session_id,  # 微信群名中的下划线必须完整保留。
+        target_id=_text(_field(raw, "chat_id")) or session_id,
+        scene=scene,
+        message_id=_message_id(raw, event) or _text(_field(raw, "client_seq") or _field(raw, "event_id")),
+        sender_id=_text(_field(sender, "platform_user_id") or _field(member, "user_id")),
+        sender_name=_text(_field(sender, "display_name") or _field(member, "nickname")),
+        direction="inbound",
+        message_type=_text(_call(event, "get_message_type"), 64),
+        content=_content(event, raw),
+        raw_message_json=_raw_json(raw) if store_raw else None,
+        timestamp=_timestamp(event),
+        id_normalization_rule="identity",
+    )
+
+
+def normalize_event(event: Any, *, store_raw: bool = True) -> NormalizedMessage | None:
+    """规范化 QQ 官方或 txrui 事件；忽略其他平台及未知微信场景。"""
+    platform = _platform_type(event)
+    if platform not in {"qq_official", "txrui"}:
+        return None
+    if platform == "txrui":
+        return _normalize_txrui(event, store_raw=store_raw)
 
     session_id = _text(_call(event, "get_session_id") or getattr(event, "session_id", None))
     if not session_id:

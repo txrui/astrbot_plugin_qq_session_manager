@@ -180,9 +180,13 @@ class ManagementService:
         updated = 0
         failed = 0
         for row in rows:
-            group_name = await self.group_name_resolver.resolve(
-                row.get("target_id") or row.get("session_id") or "",
-                context=context,
+            group_name = (
+                row.get("target_id") or row.get("session_id") or ""
+                if row.get("platform") == "txrui"
+                else await self.group_name_resolver.resolve(
+                    row.get("target_id") or row.get("session_id") or "",
+                    context=context,
+                )
             )
             if not group_name:
                 failed += 1

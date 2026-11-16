@@ -48,6 +48,9 @@ class EventCollector:
             message = normalize_event(event)
             if message is None or message.scene != "group":
                 return ""
+            if message.platform == "txrui":
+                # txrui 的 chat_id 就是会话名称；不向 QQ 开放平台反查微信名称。
+                return message.target_id
             return await self.group_name_resolver.resolve(
                 message.target_id, event=event
             )
