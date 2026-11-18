@@ -29,7 +29,7 @@ except ImportError:  # 顶层模块方式加载时的回退
     from core.session_service import SessionService
     from core.web_view import ManagementService, WebViewAPI
 
-PLUGIN_NAME = "astrbot_plugin_qq_session_manager"
+PLUGIN_NAME = "astrbot_plugin_session_manager"
 
 
 class QQSessionManagerPlugin(star.Star):

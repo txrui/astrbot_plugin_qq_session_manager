@@ -1,7 +1,7 @@
-name: astrbot_plugin_qq_session_manager
+name: astrbot_plugin_session_manager
 display_name: 会话记录管理器
 author: AstrBot Community
-version: v0.4.0
+version: v0.5.1
 desc: 持久化 QQ 官方及 txrui 微信会话路由，采集聊天记录并提供可视化管理视图；为 QQ 官方适配器恢复主动发送缓存。
 repo: https://github.com/AstrBotDevs/AstrBot
 astrbot_version: ">=4.29.4"

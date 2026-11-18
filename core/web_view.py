@@ -29,7 +29,7 @@ except ImportError:  # 顶层模块方式加载时的回退
     from group_name import GroupNameResolver
     from repository import Repository
 
-PLUGIN_NAME = "astrbot_plugin_qq_session_manager"
+PLUGIN_NAME = "astrbot_plugin_session_manager"
 API_PREFIX = f"/{PLUGIN_NAME}/view"
 
 SCENES = {"friend", "group", "channel"}
@@ -236,6 +236,8 @@ class WebViewAPI:
             (f"{API_PREFIX}/route/status", self.post_route_status, ["POST"], "启用或禁用会话路由"),
             (f"{API_PREFIX}/route/delete", self.post_route_delete, ["POST"], "删除会话路由及消息"),
             (f"{API_PREFIX}/cleanup", self.post_cleanup, ["POST"], "清理过期会话和消息"),
+            (f"{API_PREFIX}/export", self.get_export, ["GET"], "导出会话和聊天记录"),
+            (f"{API_PREFIX}/import", self.post_import, ["POST"], "导入会话和聊天记录"),
             (
                 f"{API_PREFIX}/group_names/backfill",
                 self.post_group_names_backfill,
@@ -343,6 +345,17 @@ class WebViewAPI:
             platform_id=platform_id, session_id=session_id, scene=scene
         )
         return json_response({"deleted": deleted})
+
+    async def get_export(self):
+        return json_response(self.service.repository.export_data())
+
+    async def post_import(self):
+        payload = await self._body()
+        try:
+            result = self.service.repository.import_data(payload)
+        except (ValueError, TypeError, KeyError) as exc:
+            return error_response(f"导入失败: {exc}")
+        return json_response(result)
 
     async def post_cleanup(self):
         return json_response(self.service.cleanup())

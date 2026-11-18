@@ -122,7 +122,12 @@
 
       <footer class="footer">
         <span id="footer-hint">会话记录保存在插件数据目录的 SQLite 数据库中。</span>
-        <button id="cleanup-btn" class="button button-danger-ghost">清理过期数据</button>
+        <div class="footer-actions">
+          <button id="export-btn" class="button button-secondary" type="button">导出备份</button>
+          <button id="import-btn" class="button button-secondary" type="button">导入备份</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+          <button id="cleanup-btn" class="button button-danger-ghost">清理过期数据</button>
+        </div>
       </footer>
     </div>
 

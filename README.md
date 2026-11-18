@@ -42,16 +42,16 @@
 
 入口：`WebUI → 插件 → QQ 会话与聊天记录管理器 → 视图 → dashboard`
 
-可查看和搜索会话路由、浏览聊天记录、管理路由、回填群名称及清理过期数据。群名称查询需要 QQ 开放平台的群管理权限；没有权限时页面会显示群号。
+可查看和搜索会话路由、浏览聊天记录、管理路由及清理过期数据。支持导出 JSON 备份，并将同格式备份合并导入；导入时已有记录保留，重复记录会跳过。备份包含会话路由和聊天记录，不包含附件文件。群名称查询需要 QQ 开放平台的群管理权限；没有权限时页面会显示群号。
 
 ## 数据与测试
 
-数据库文件：`astrbot_plugin_qq_session_manager/sessions.db`。
+数据库文件：`astrbot_plugin_session_manager/sessions.db`。
 
 运行自带测试：
 
 ```bash
-cd plugins/astrbot_plugin_qq_session_manager
+cd plugins/astrbot_plugin_session_manager
 python3 tests/run_tests.py
 ```
 

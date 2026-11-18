@@ -377,6 +377,45 @@ class Repository:
         total = self._connection().execute(count_sql, count_args).fetchone()[0]
         return items, int(total)
 
+    def export_data(self) -> dict[str, object]:
+        """导出会话路由和聊天记录，不包含自增主键。"""
+        conn = self._connection()
+        sessions = conn.execute(
+            "SELECT platform_id,bot_id,platform,session_id,normalized_session_id,target_id,scene,message_type,last_message_id,last_active_at,created_at,updated_at,expires_at,status,id_normalization_rule,group_name FROM sessions ORDER BY id"
+        ).fetchall()
+        messages = conn.execute(
+            "SELECT platform_id,session_id,target_id,scene,message_id,sender_id,sender_name,direction,message_type,content,raw_message_json,timestamp,imported,created_at FROM session_messages ORDER BY id"
+        ).fetchall()
+        return {"format": "astrbot-session-manager", "version": 1,
+                "exported_at": int(time.time()), "sessions": [dict(row) for row in sessions],
+                "messages": [dict(row) for row in messages]}
+
+    def import_data(self, payload: dict) -> dict[str, int]:
+        """合并导入备份，保留现有记录并忽略唯一键冲突。"""
+        if payload.get("format") != "astrbot-session-manager" or payload.get("version") != 1:
+            raise ValueError("不支持的备份格式或版本")
+        sessions = payload.get("sessions")
+        messages = payload.get("messages")
+        if not isinstance(sessions, list) or not isinstance(messages, list):
+            raise ValueError("备份必须包含 sessions 和 messages 数组")
+        session_columns = ("platform_id", "bot_id", "platform", "session_id", "normalized_session_id", "target_id", "scene", "message_type", "last_message_id", "last_active_at", "created_at", "updated_at", "expires_at", "status", "id_normalization_rule", "group_name")
+        message_columns = ("platform_id", "session_id", "target_id", "scene", "message_id", "sender_id", "sender_name", "direction", "message_type", "content", "raw_message_json", "timestamp", "imported", "created_at")
+        if len(sessions) > 100000 or len(messages) > 1000000:
+            raise ValueError("备份记录数量超过限制")
+        conn = self._connection()
+        counts = {"sessions": 0, "messages": 0}
+        with conn:
+            for table_rows, columns, table in ((sessions, session_columns, "sessions"), (messages, message_columns, "session_messages")):
+                placeholders = ",".join("?" for _ in columns)
+                names = ",".join(columns)
+                sql = f"INSERT OR IGNORE INTO {table} ({names}) VALUES ({placeholders})"
+                for row in table_rows:
+                    if not isinstance(row, dict) or any(key not in row for key in columns if key not in ("bot_id", "message_id", "sender_id", "sender_name", "message_type", "content", "raw_message_json", "expires_at", "id_normalization_rule", "group_name", "target_id", "scene")):
+                        raise ValueError(f"{table} 中包含无效记录")
+                    cursor = conn.execute(sql, [row.get(key) for key in columns])
+                    counts["sessions" if table == "sessions" else "messages"] += cursor.rowcount
+        return counts
+
     def counts(self) -> dict[str, int]:
         conn = self._connection()
         return {"sessions": conn.execute("SELECT count(*) FROM sessions").fetchone()[0], "messages": conn.execute("SELECT count(*) FROM session_messages").fetchone()[0]}

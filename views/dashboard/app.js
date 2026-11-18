@@ -582,6 +582,50 @@ $("message-search").onclick = async () => {
     button.disabled = false;
   }
 };
+$("export-btn").onclick = async () => {
+  const button = $("export-btn");
+  button.disabled = true;
+  try {
+    const data = await apiGet("/export");
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `astrbot-session-manager-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast(`备份已导出：${data.sessions?.length || 0} 条会话，${data.messages?.length || 0} 条消息`);
+  } catch (error) {
+    toast(`导出失败：${error.message}`, true);
+  } finally {
+    button.disabled = false;
+  }
+};
+
+$("import-btn").onclick = () => $("import-file").click();
+$("import-file").onchange = async (event) => {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+  try {
+    const backup = JSON.parse(await file.text());
+    const sessionCount = Array.isArray(backup.sessions) ? backup.sessions.length : 0;
+    const messageCount = Array.isArray(backup.messages) ? backup.messages.length : 0;
+    const confirmed = await confirmAction({
+      title: "导入备份",
+      message: `将合并导入 ${sessionCount} 条会话和 ${messageCount} 条消息；已存在的记录会保留。是否继续？`,
+      submitText: "确认导入",
+    });
+    if (!confirmed) return;
+    const result = await apiPost("/import", backup);
+    toast(`导入完成：新增 ${result.sessions || 0} 条会话、${result.messages || 0} 条消息`);
+    await Promise.all([loadStatus(), loadSessions()]);
+    if ($("tab-messages").classList.contains("active")) await loadConversations();
+  } catch (error) {
+    toast(`导入失败：${error.message}`, true);
+  }
+};
+
 $("cleanup-btn").onclick = async () => {
   const button = $("cleanup-btn");
   const confirmed = await confirmAction({

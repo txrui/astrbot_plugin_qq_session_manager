@@ -106,6 +106,7 @@ tr:last-child td { border-bottom: 0; }
 .badge-expired { background: var(--danger-soft); color: var(--danger); }
 .badge-scene { background: var(--primary-soft); color: var(--primary); }
 .actions { display: flex; gap: 6px; white-space: nowrap; }
+.footer-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
 .pagination { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; color: var(--muted); font-size: 12px; }
 .pagination-actions { display: flex; gap: 8px; }
